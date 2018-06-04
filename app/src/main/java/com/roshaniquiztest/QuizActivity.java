@@ -1,17 +1,11 @@
 package com.roshaniquiztest;
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -29,7 +23,6 @@ import com.roshaniquiztest.POJO.QuestionsList;
 import com.roshaniquiztest.POJO.Result;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class QuizActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -37,35 +30,33 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
     private List<Result> quesList;
     private int score = 0;
     private int qid = 0;
-
-
+    String JSON_URL = "https://opentdb.com/api.php?amount=10&category=9&difficulty=easy";
     Result currentQ;
     TextView txtQuestion, times, scored;
-    Button button1, button2, button3,button4;
+    Button option1, option2, option3,option4;
     QuizHelper db = new QuizHelper(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_quiz);
         txtQuestion = (TextView) findViewById(R.id.txtQuestion);
-        button1 = (Button) findViewById(R.id.button1);
-        button2 = (Button) findViewById(R.id.button2);
-        button3 = (Button) findViewById(R.id.button3);
-        button4 = (Button) findViewById(R.id.btn4);
+        option1 = (Button) findViewById(R.id.option1);
+        option2 = (Button) findViewById(R.id.option2);
+        option3 = (Button) findViewById(R.id.option3);
+        option4 = (Button) findViewById(R.id.option4);
         scored = (TextView) findViewById(R.id.score);
         times = (TextView) findViewById(R.id.timers);
 
-        button1.setOnClickListener(this);
-        button2.setOnClickListener(this);
-        button3.setOnClickListener(this);
-        button4.setOnClickListener(this);
+        option1.setOnClickListener(this);
+        option2.setOnClickListener(this);
+        option3.setOnClickListener(this);
+        option4.setOnClickListener(this);
         getquestionlist();
 
     }
     public void getquestionlist() {
         final TransparentProgressDialog progressDialog = new TransparentProgressDialog(this,R.drawable.spinner);
         progressDialog.show();
-        String JSON_URL = "https://opentdb.com/api.php?amount=10&category=9&difficulty=easy";
         StringRequest stringRequest = new StringRequest(Request.Method.GET, JSON_URL,
                 new Response.Listener<String>() {
                     @Override
@@ -84,8 +75,8 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
                        // times.setText("00:02:00");
 
 
-                        CounterClass timer = new CounterClass(180000, 1000);
-                        timer.start();
+//                        CounterClass timer = new CounterClass(180000, 1000);
+//                        timer.start();
                     }
                 },
                 new Response.ErrorListener() {
@@ -103,40 +94,52 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         requestQueue.add(stringRequest);
 
     }
-    public void getAnswer(String AnswerString) {
+    public void getAnswer(String AnswerString, Button button) {
         if (currentQ.getCorrectAnswer().equals(AnswerString)) {
 
-
+            button.setBackgroundColor(getResources().getColor(R.color.green));
             score++;
             scored.setText("Score : " + score);
         } else {
-
-
-//
-//            Intent intent = new Intent(QuizActivity.this,
-//                    ResultActivity.class);
-//
-//
-//            Bundle b = new Bundle();
-//            b.putInt("score", score);
-//            intent.putExtras(b);
-//            startActivity(intent);
-//            finish();
+            button.setBackgroundColor(getResources().getColor(R.color.red));
         }
         if (qid < posts.getResults().size()) {
 
 
             currentQ = quesList.get(qid);
-            setQuestionView();
+            new CountDownTimer(1000,1000){
+
+                @Override
+                public void onTick(long millisUntilFinished) {
+
+                }
+
+                @Override
+                public void onFinish() {
+                     setQuestionView();
+                }
+            }.start();
+
         } else {
+            new CountDownTimer(1000,1000){
+
+                @Override
+                public void onTick(long millisUntilFinished) {
+
+                }
+
+                @Override
+                public void onFinish() {
+                    Intent intent = new Intent(QuizActivity.this,wonActivity.class);
+                    Bundle b = new Bundle();
+                    b.putInt("score",score);
+                    intent.putExtras(b);
+                    startActivity(intent);
+                    finish();
+                }
+            }.start();
 
 
-            Intent intent = new Intent(QuizActivity.this,won.class);
-            Bundle b = new Bundle();
-            b.putInt("score",score);
-            intent.putExtras(b);
-            startActivity(intent);
-            finish();
         }
 
 
@@ -145,67 +148,78 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.button1:
-                getAnswer(button1.getText().toString());
+            case R.id.option1:
+                getAnswer(option1.getText().toString(),option1);
                 break;
-            case R.id.button2:
-                getAnswer(button2.getText().toString());
+            case R.id.option2:
+                getAnswer(option2.getText().toString(),option2);
                 break;
-            case R.id.button3:
-                getAnswer(button3.getText().toString());
+            case R.id.option3:
+                getAnswer(option3.getText().toString(),option3);
                 break;
-            case R.id.btn4:
-                getAnswer(button4.getText().toString());
+            case R.id.option4:
+                getAnswer(option4.getText().toString(),option4);
                 break;
         }
     }
 
 
-    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    @SuppressLint("NewApi")
-    public class CounterClass extends CountDownTimer {
-
-        public CounterClass(long millisInFuture, long countDownInterval) {
-            super(millisInFuture, countDownInterval);
-            // TODO Auto-generated constructor stub
-        }
-
-
-        @Override
-        public void onFinish() {
-            times.setText("Time is up");
-            open();
-        }
-
-        @Override
-        public void onTick(long millisUntilFinished) {
-            // TODO Auto-generated method stub
-
-            long millis = millisUntilFinished;
-            String hms = String.format(
-                    "%02d:%02d:%02d",
-                    TimeUnit.MILLISECONDS.toHours(millis),
-                    TimeUnit.MILLISECONDS.toMinutes(millis)
-                            - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS
-                            .toHours(millis)),
-                    TimeUnit.MILLISECONDS.toSeconds(millis)
-                            - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
-                            .toMinutes(millis)));
-            System.out.println(hms);
-            times.setText(hms);
-        }
-
-
-    }
+//    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+//    @SuppressLint("NewApi")
+//    public class CounterClass extends CountDownTimer {
+//
+//        public CounterClass(long millisInFuture, long countDownInterval) {
+//            super(millisInFuture, countDownInterval);
+//            // TODO Auto-generated constructor stub
+//        }
+//
+//
+//        @Override
+//        public void onFinish() {
+//            times.setText("Time is up");
+//            open();
+//        }
+//
+//        @Override
+//        public void onTick(long millisUntilFinished) {
+//            // TODO Auto-generated method stub
+//
+//            long millis = millisUntilFinished;
+//            String hms = String.format(
+//                    "%02d:%02d:%02d",
+//                    TimeUnit.MILLISECONDS.toHours(millis),
+//                    TimeUnit.MILLISECONDS.toMinutes(millis)
+//                            - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS
+//                            .toHours(millis)),
+//                    TimeUnit.MILLISECONDS.toSeconds(millis)
+//                            - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
+//                            .toMinutes(millis)));
+//            System.out.println(hms);
+//            times.setText(hms);
+//        }
+//
+//
+//    }
 
     private void setQuestionView() {
 
+        option1.setBackgroundColor(getResources().getColor(R.color.light_red_2));
+        option2.setBackgroundColor(getResources().getColor(R.color.light_red_2));
+        option3.setBackgroundColor(getResources().getColor(R.color.light_red_2));
+        option4.setBackgroundColor(getResources().getColor(R.color.light_red_2));
+        if(currentQ.getOPTC().equals("") && currentQ.getOPTD().equals("")){
+            option3.setVisibility(View.GONE);
+            option4.setVisibility(View.GONE);
+        }else {
+            option3.setVisibility(View.VISIBLE);
+            option4.setVisibility(View.VISIBLE);
+        }
         // the method which will put all things together
         txtQuestion.setText(currentQ.getQuestion());
-        button1.setText(currentQ.getOPTA());
-        button2.setText(currentQ.getOPTB());
-        button3.setText(currentQ.getOPTC());
-        button4.setText(currentQ.getOPTD());
+        option1.setText(currentQ.getOPTA());
+        option2.setText(currentQ.getOPTB());
+        option3.setText(currentQ.getOPTC());
+        option4.setText(currentQ.getOPTD());
         qid++;
     }
 

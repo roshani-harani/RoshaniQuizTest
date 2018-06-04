@@ -6,7 +6,7 @@ import android.widget.TextView;
 
 
 
-public class won extends Activity {
+public class wonActivity extends Activity {
     TextView tv;
 
     @Override

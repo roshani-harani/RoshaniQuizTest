@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="YOU WON CONGRATS"
+        android:text="Congratulations"
         android:textAlignment="center"
         android:textColor="@color/light_red_2"
         android:textSize="30dp" />
@@ -17,13 +17,14 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="100dp"
+        android:padding="10dp"
         android:src="@drawable/congrats" />
 
     <TextView
         android:id="@+id/congo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="SCORE"
+        android:text="Score :"
         android:textAlignment="center"
         android:textColor="@color/light_red_2"
         android:textSize="20dp" />
