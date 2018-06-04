@@ -209,6 +209,7 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         qid++;
     }
 
+
     public void open(){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setMessage("Time is up");
